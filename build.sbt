@@ -6,7 +6,7 @@ platformTarget in Android := "android-24"
 
 name := "shadowsocksr"
 
-applicationId  := "in.zhaoj.shadowsocksr"
+applicationId  := "black.ssr"
 
 scalaVersion := "2.11.8"
 
