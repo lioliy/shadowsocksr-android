@@ -2,7 +2,7 @@ package com.github.shadowsocks
 
 import java.nio.charset.Charset
 
-import android.app.Activity
+import android.app.{Activity, TaskStackBuilder}
 import android.content._
 import android.content.pm.PackageManager
 import android.nfc.NfcAdapter.CreateNdefMessageCallback
@@ -202,9 +202,11 @@ final class ProfileManagerActivity extends AppCompatActivity with OnMenuItemClic
     val toolbar = findViewById(R.id.toolbar).asInstanceOf[Toolbar]
     toolbar.setTitle(R.string.profiles)
     toolbar.setNavigationIcon(R.drawable.ic_navigation_close)
-    toolbar.setNavigationOnClickListener((v: View) => {
+    toolbar.setNavigationOnClickListener(_ => {
       val intent = getParentActivityIntent
-      if (intent == null) finish else navigateUpTo(intent)
+      if (shouldUpRecreateTask(intent) || isTaskRoot)
+        TaskStackBuilder.create(this).addNextIntentWithParentStack(intent).startActivities()
+      else finish()
     })
     toolbar.inflateMenu(R.menu.profile_manager_menu)
     toolbar.setOnMenuItemClickListener(this)
@@ -292,7 +294,7 @@ final class ProfileManagerActivity extends AppCompatActivity with OnMenuItemClic
       case R.id.fab_qrcode_add =>
         menu.toggle(false)
         val intent = new Intent(this, classOf[ScannerActivity])
-        startActivityForResult(intent, REQUEST_QRCODE)
+        startActivity(intent)
       case R.id.fab_nfc_add =>
         menu.toggle(true)
         val dialog = new AlertDialog.Builder(ProfileManagerActivity.this, R.style.Theme_Material_Dialog_Alert)
@@ -385,16 +387,7 @@ final class ProfileManagerActivity extends AppCompatActivity with OnMenuItemClic
     app.profileManager.setProfileAddedListener(null)
     super.onDestroy
   }
-
-  override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
-    if (requestCode == REQUEST_QRCODE && resultCode == Activity.RESULT_OK) {
-      val contents = data.getStringExtra("uri")
-      if (!TextUtils.isEmpty(contents))
-        Parser.findAll_ssr(contents).foreach(app.profileManager.createProfile)
-        Parser.findAll(contents).foreach(app.profileManager.createProfile)
-    }
-  }
-
+  
   override def onBackPressed() {
     if (menu.isOpened) menu.close(true) else super.onBackPressed()
   }
