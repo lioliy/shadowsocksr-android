@@ -40,6 +40,9 @@
 package com.github.shadowsocks
 
 import java.io.IOException
+import java.net.InetAddress
+import java.util
+import java.util.concurrent.TimeUnit
 import java.util.{Timer, TimerTask}
 
 import android.app.Service
@@ -48,11 +51,15 @@ import android.os.{Handler, RemoteCallbackList}
 import android.text.TextUtils
 import android.util.Log
 import android.widget.Toast
-import com.github.kevinsawicki.http.HttpRequest
+import com.github.shadowsocks.ShadowsocksApplication.app
 import com.github.shadowsocks.aidl.{IShadowsocksService, IShadowsocksServiceCallback}
 import com.github.shadowsocks.utils._
 import com.github.shadowsocks.ShadowsocksApplication.app
 import com.github.shadowsocks.database.Profile
+import okhttp3.{Dns, FormBody, OkHttpClient, Request}
+
+
+import scala.util.Random
 
 trait BaseService extends Service {
 
@@ -137,13 +144,28 @@ trait BaseService extends Service {
     val container = holder.getContainer
     val url = container.getString("proxy_url")
     val sig = Utils.getSignature(this)
-    val list = HttpRequest
-      .post(url)
-      .connectTimeout(2000)
-      .readTimeout(2000)
-      .send("sig="+sig)
-      .body
-    val proxies = util.Random.shuffle(list.split('|').toSeq)
+
+    val client = new OkHttpClient.Builder()
+      .dns(hostname => Utils.resolve(hostname, enableIPv6 = false) match {
+        case Some(ip) => util.Arrays.asList(InetAddress.getByName(ip))
+        case _ => Dns.SYSTEM.lookup(hostname)
+      })
+      .connectTimeout(10, TimeUnit.SECONDS)
+      .writeTimeout(10, TimeUnit.SECONDS)
+      .readTimeout(30, TimeUnit.SECONDS)
+      .build()
+    val requestBody = new FormBody.Builder()
+      .add("sig", sig)
+      .build()
+    val request = new Request.Builder()
+      .url(url)
+      .post(requestBody)
+      .build()
+
+    val resposne = client.newCall(request).execute()
+    val list = resposne.body.string
+
+    val proxies = Random.shuffle(list.split('|').toSeq)
     val proxy = proxies.head.split(':')
     profile.host = proxy(0).trim
     profile.remotePort = proxy(1).trim.toInt
@@ -287,5 +309,5 @@ trait BaseService extends Service {
       case ex: Exception => "exclude = " + default + ";"
     }
   }
-  
+
 }
