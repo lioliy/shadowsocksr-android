@@ -184,16 +184,15 @@ class ShadowsocksVpnService extends VpnService with BaseService {
     }
   }
 
-
   def startShadowsocksUDPDaemon() {
     val conf = ConfigUtils
       .SHADOWSOCKS.formatLocal(Locale.ENGLISH, profile.host, profile.remotePort, profile.localPort,
-        profile.password, profile.method, 600, profile.protocol, profile.obfs, profile.obfs_param)
+        profile.password, profile.method, 600, profile.protocol, profile.obfs, profile.obfs_param, profile.protocol_param)
     Utils.printToFile(new File(getApplicationInfo.dataDir + "/ss-local-udp-vpn.conf"))(p => {
       p.println(conf)
     })
 
-    val cmd = ArrayBuffer[String](getApplicationInfo.dataDir + "/ss-local", "-V", "-U"
+    val cmd = ArrayBuffer[String](getApplicationInfo.nativeLibraryDir + "/libss-local.so", "-V", "-U"
       , "-b", "127.0.0.1"
       , "-t", "600"
       , "-P", getApplicationInfo.dataDir
@@ -208,12 +207,12 @@ class ShadowsocksVpnService extends VpnService with BaseService {
 
     val conf = ConfigUtils
       .SHADOWSOCKS.formatLocal(Locale.ENGLISH, profile.host, profile.remotePort, profile.localPort,
-        profile.password, profile.method, 600, profile.protocol, profile.obfs, profile.obfs_param)
+        profile.password, profile.method, 600, profile.protocol, profile.obfs, profile.obfs_param, profile.protocol_param)
     Utils.printToFile(new File(getApplicationInfo.dataDir + "/ss-local-vpn.conf"))(p => {
       p.println(conf)
     })
 
-    val cmd = ArrayBuffer[String](getApplicationInfo.dataDir + "/ss-local", "-V"
+    val cmd = ArrayBuffer[String](getApplicationInfo.nativeLibraryDir + "/libss-local.so", "-V"
       , "-b", "127.0.0.1"
       , "-t", "600"
       , "-P", getApplicationInfo.dataDir
@@ -236,12 +235,12 @@ class ShadowsocksVpnService extends VpnService with BaseService {
   def startDnsTunnel() = {
     val conf = ConfigUtils
       .SHADOWSOCKS.formatLocal(Locale.ENGLISH, profile.host, profile.remotePort, profile.localPort + 63,
-        profile.password, profile.method, 10, profile.protocol, profile.obfs, profile.obfs_param)
+        profile.password, profile.method, 10, profile.protocol, profile.obfs, profile.obfs_param, profile.protocol_param)
     Utils.printToFile(new File(getApplicationInfo.dataDir + "/ss-tunnel-vpn.conf"))(p => {
       p.println(conf)
     })
 
-    val cmd = ArrayBuffer[String](getApplicationInfo.dataDir + "/ss-tunnel"
+    val cmd = ArrayBuffer[String](getApplicationInfo.nativeLibraryDir + "/libss-tunnel.so"
       , "-V"
       , "-u"
       , "-t", "10"
@@ -297,7 +296,7 @@ class ShadowsocksVpnService extends VpnService with BaseService {
     Utils.printToFile(new File(getApplicationInfo.dataDir + "/pdnsd-vpn.conf"))(p => {
       p.println(conf)
     })
-    val cmd = Array(getApplicationInfo.dataDir + "/pdnsd", "-c", getApplicationInfo.dataDir + "/pdnsd-vpn.conf")
+    val cmd = Array(getApplicationInfo.nativeLibraryDir + "/libpdnsd.so", "-c", getApplicationInfo.dataDir + "/pdnsd-vpn.conf")
 
     if (BuildConfig.DEBUG) Log.d(TAG, cmd.mkString(" "))
 
@@ -355,7 +354,7 @@ class ShadowsocksVpnService extends VpnService with BaseService {
 
     val fd = conn.getFd
 
-    var cmd = ArrayBuffer[String](getApplicationInfo.dataDir + "/tun2socks",
+    var cmd = ArrayBuffer[String](getApplicationInfo.nativeLibraryDir + "/libtun2socks.so",
       "--netif-ipaddr", PRIVATE_VLAN.formatLocal(Locale.ENGLISH, "2"),
       "--netif-netmask", "255.255.255.0",
       "--socks-server-addr", "127.0.0.1:" + profile.localPort,
