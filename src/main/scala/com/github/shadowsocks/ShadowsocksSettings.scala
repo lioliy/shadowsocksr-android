@@ -129,25 +129,37 @@ class ShadowsocksSettings extends PreferenceFragment with OnSharedPreferenceChan
       app.profileManager.updateProfile(profile)
     })
     findPreference(Key.route).setOnPreferenceChangeListener((_, value) => {
-      if(value == "self")
-      {
+      if(value == "self") {
         val AclUrlEditText = new EditText(activity);
         AclUrlEditText.setText(getPreferenceManager.getSharedPreferences.getString(Key.aclurl, ""));
         new AlertDialog.Builder(activity)
           .setTitle(getString(R.string.acl_file))
           .setPositiveButton(android.R.string.ok, ((_, _) => {
-            getPreferenceManager.getSharedPreferences.edit.putString(Key.aclurl, AclUrlEditText.getText().toString()).commit()
-            downloadAcl(AclUrlEditText.getText().toString())
+            if(AclUrlEditText.getText().toString() == "")
+            {
+              setProfile(profile)
+            }
+            else
+            {
+              getPreferenceManager.getSharedPreferences.edit.putString(Key.aclurl, AclUrlEditText.getText().toString()).commit()
+              downloadAcl(AclUrlEditText.getText().toString())
+              profile.route = value.asInstanceOf[String]
+              app.profileManager.updateProfile(profile)
+            }
           }): DialogInterface.OnClickListener)
-          .setNegativeButton(android.R.string.no, null)
+          .setNegativeButton(android.R.string.no,  ((_, _) => {
+            setProfile(profile)
+          }): DialogInterface.OnClickListener)
           .setView(AclUrlEditText)
           .create()
           .show()
-          true
+      }
+      else {
+        profile.route = value.asInstanceOf[String]
+        app.profileManager.updateProfile(profile)
       }
 
-      profile.route = value.asInstanceOf[String]
-      app.profileManager.updateProfile(profile)
+      true
     })
 
     isProxyApps = findPreference(Key.proxyApps).asInstanceOf[SwitchPreference]
@@ -260,8 +272,6 @@ class ShadowsocksSettings extends PreferenceFragment with OnSharedPreferenceChan
 
   def downloadAcl(url: String) {
     val progressDialog = ProgressDialog.show(activity, getString(R.string.aclupdate), getString(R.string.aclupdate_downloading), false, false)
-    progressDialog.create()
-    progressDialog.show()
     new Thread {
       override def run() {
         Looper.prepare();
