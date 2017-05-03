@@ -188,6 +188,8 @@ class ShadowsocksApplication extends Application {
     }
     pending.setResultCallback(callback, 2, TimeUnit.SECONDS)
     JobManager.create(this).addJobCreator(DonaldTrump)
+
+    TcpFastOpen.enabled(settings.getBoolean(Key.tfo, false))
   }
 
   def refreshContainerHolder {
