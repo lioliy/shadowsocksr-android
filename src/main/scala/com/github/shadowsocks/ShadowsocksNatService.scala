@@ -106,9 +106,9 @@ class ShadowsocksNatService extends BaseService {
       Utils.printToFile(new File(getApplicationInfo.dataDir + "/ss-tunnel-nat.conf"))(p => {
         p.println(conf)
       })
-      val cmd = ArrayBuffer[String](getApplicationInfo.dataDir + "/ss-tunnel"
+      val cmd = ArrayBuffer[String](getApplicationInfo.dataDir + "/ss-local"
         , "-u"
-        , "-t" , "10"
+        , "-t" , "60"
         , "-b" , "127.0.0.1"
         , "-l" , (profile.localPort + 53).toString
         , "-P" , getApplicationInfo.dataDir
@@ -132,7 +132,7 @@ class ShadowsocksNatService extends BaseService {
         p.println(conf)
       })
 
-      val cmdBuf = ArrayBuffer[String](getApplicationInfo.dataDir + "/ss-tunnel"
+      val cmdBuf = ArrayBuffer[String](getApplicationInfo.dataDir + "/ss-local"
         , "-t" , "10"
         , "-b" , "127.0.0.1"
         , "-l" , (profile.localPort + 63).toString

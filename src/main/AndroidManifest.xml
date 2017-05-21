@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools" package="com.github.shadowsocks"
-          android:versionCode="236"
-          android:versionName="3.3.7.1">
+          android:versionCode="249"
+          android:versionName="3.3.8.2">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -77,6 +77,10 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
             <intent-filter>
+                <action android:name="in.zhaoj.shadowsocksr.intent.action.SCAN"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
@@ -137,7 +141,7 @@
                 android:label="@string/quick_toggle"
                 android:theme="@android:style/Theme.Translucent.NoTitleBar"
                 android:excludeFromRecents="true"
-		android:taskAffinity=""
+                android:taskAffinity=""
                 android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.CREATE_SHORTCUT" />
