@@ -92,7 +92,7 @@ class Profile {
   var udpdns: Boolean = false
 
   @DatabaseField
-  var dns: String = "8.8.8.8:53"
+  var dns: String = "208.67.222.222:53"
 
   @DatabaseField
   var china_dns: String = "114.114.114.114:53,223.5.5.5:53"
@@ -108,6 +108,9 @@ class Profile {
 
   @DatabaseField
   var rx: Long = 0
+
+  @DatabaseField
+  var elapsed: Long = 0
 
   @DatabaseField
   val date: java.util.Date = new java.util.Date()

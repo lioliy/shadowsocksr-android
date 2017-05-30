@@ -51,7 +51,7 @@ libraryDependencies ++=
   "com.squareup.okhttp3" % "okhttp" % "3.5.0" ::
   "com.twofortyfouram" % "android-plugin-api-for-locale" % "1.0.2" ::
   "dnsjava" % "dnsjava" % "2.1.7" ::
-  "eu.chainfire" % "libsuperuser" % "1.0.0.201608240809" ::
+  "eu.chainfire" % "libsuperuser" % "1.0.0.+" ::
   "net.glxn.qrgen" % "android" % "2.0" ::
   Nil
 
