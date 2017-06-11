@@ -27,7 +27,7 @@ A [shadowsocksR](https://github.com/breakwa11/shadowsocks-rss/) client for Andro
 * Invoke the building like this
 
 ```bash
-    git submodule update --init
+    git clone --recursive https://github.com/lioliy/shadowsocksr-android.git
     
     # Build the App
     sbt native-build clean android:package-release
@@ -46,7 +46,7 @@ A [shadowsocksR](https://github.com/breakwa11/shadowsocks-rss/) client for Andro
 * Invoke the building like this
 
 ```bash
-    git submodule update --init
+    git clone --recursive https://github.com/lioliy/shadowsocksr-android.git
 
     # Build native binaries
     ./build.sh
